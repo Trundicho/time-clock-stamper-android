@@ -13,7 +13,7 @@ Just run the "TimeClockStamperUiApplication.java" out of your IDE.
 Configuration parameters can be adjusted in the application.properties
 
 ## Built With
-* [Maven](https://maven.apache.org/) - Dependency Management
+* [Gradle](https://gradle.org/) - Dependency Management
 * [Android-Studio](https://developer.android.com/studio/) - Android IDE
 
 ## Authors
