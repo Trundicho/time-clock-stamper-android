@@ -32,7 +32,7 @@ public class TimeClockStamperFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         this.binding = TimeClockStamperFragmentBinding.inflate(inflater, container, false);
         TextView textView = binding.sectionLabel2;
-//        pageViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+//        pageViewModel.getText().observe(getViewLifecycleOwner(), x -> textView.setText("blub" + x));
         return binding.getRoot();
     }
 
