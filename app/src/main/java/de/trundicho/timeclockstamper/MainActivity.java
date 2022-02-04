@@ -14,6 +14,10 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
+    /**
+     * Tabbed layout tutorial:
+     * https://www.youtube.com/watch?v=h4HwU_ENXYM&ab_channel=CodinginFlow
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
