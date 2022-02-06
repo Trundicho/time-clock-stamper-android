@@ -45,10 +45,6 @@ public class AndroidFilePersistence implements ClockTimePersistencePort {
     }
 
     public void write(List<ClockTime> clockTimes) {
-//        if(true) {
-//            writeToFile("", createFileName());
-//            return;
-//        }
         LocalDateTime currentDate = getCurrentDate();
         List<ClockTime> clockTimesOfCurrentMonth = clockTimes.stream()
                 .filter(c -> currentDate.getMonth().equals(c.getDate().getMonth())
