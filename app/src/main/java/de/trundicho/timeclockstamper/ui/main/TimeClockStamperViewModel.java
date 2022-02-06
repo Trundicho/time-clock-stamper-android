@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
+import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDataDto;
 import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDto;
 import de.trundicho.timeclockstamper.core.adapters.api.TimeClockStamperApi;
 import de.trundicho.timeclockstamper.core.adapters.api.TimeClockStamperApiImpl;
@@ -14,7 +15,7 @@ public class TimeClockStamperViewModel extends ViewModel {
 
     public TimeClockStamperViewModel() {
         String timeZone = "Europe/Berlin";
-        https://technobyte.org/write-text-files-android-build-scratchpad-app-tutorial/
+//        https://technobyte.org/write-text-files-android-build-scratchpad-app-tutorial/
         clockTimePersistencePort = new AndroidFilePersistence("",
                 "test-clockTime-list.json",
                 timeZone);
@@ -35,5 +36,11 @@ public class TimeClockStamperViewModel extends ViewModel {
 
     public void setActivity(ActivityCallback activityCallback) {
         clockTimePersistencePort.setActivityCallBack(activityCallback);
+    }
+
+    public void setClockTimesToday(List<ClockTimeDto> clockTimeDtos) {
+        ClockTimeDataDto clockTimeDto = new ClockTimeDataDto();
+        clockTimeDto.setClockTimes(clockTimeDtos);
+        timeClockStamperApi.setToday(clockTimeDto);
     }
 }
