@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -105,10 +106,15 @@ public class TimeClockStamperFragment extends Fragment {
     }
 
     private List<Map<String, String>> buildData() {
-        List<String> times = pageViewModel.getClockTimes().stream().map(c -> c.getDate().toString()).collect(Collectors.toList());
+        List<String> times = pageViewModel.getClockTimes().stream().map(c -> formatDate(c)).collect(Collectors.toList());
         ArrayList<Map<String, String>> list = new ArrayList<>();
         times.forEach(t -> list.add(putData(t)));
         return list;
+    }
+
+    @NonNull
+    private String formatDate(ClockTimeDto c) {
+        return new DateTimeFormatterBuilder().appendPattern("dd.MM.yy - HH:mm:ss").toFormatter().format(c.getDate());
     }
 
     private Map<String, String> putData(String name) {
