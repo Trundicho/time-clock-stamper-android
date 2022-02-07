@@ -1,5 +1,7 @@
 package de.trundicho.timeclockstamper.ui.main;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseBooleanArray;
@@ -97,6 +99,7 @@ public class TimeClockStamperFragment extends Fragment {
         handler.postDelayed(updateUiLoop, delay);
         super.onResume();
     }
+
     @Override
     public void onPause() {
         //stop handler when activity not visible super.onPause();
@@ -127,9 +130,29 @@ public class TimeClockStamperFragment extends Fragment {
     private SimpleAdapter createTimeStampListAdapter() {
         String[] from = {"Date"};
         int[] to = {android.R.id.text1};
-        return new SimpleAdapter(this.getContext(),
+        return new ColorArrayAdapter(this.getContext(),
                 buildStampData(),
                 android.R.layout.simple_list_item_multiple_choice, from, to);
+    }
+
+    public class ColorArrayAdapter extends SimpleAdapter {
+
+        public ColorArrayAdapter(Context context, List<Map<String, String>> data,
+                                 int resource, String[] from, int[] to) {
+            super(context, data, resource, from, to);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = (View) super.getView(position, convertView, parent);
+            if (position % 2 == 1) {
+                view.setBackgroundColor(Color.parseColor("#f7ffe8"));
+            } else {
+                view.setBackgroundColor(Color.WHITE);
+            }
+            return view;
+        }
+
     }
 
     @NonNull
