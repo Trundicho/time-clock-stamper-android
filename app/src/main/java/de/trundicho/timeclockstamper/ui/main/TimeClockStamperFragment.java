@@ -57,11 +57,7 @@ public class TimeClockStamperFragment extends Fragment {
         workedToday.setText(workedToday());
         clockTimeTable = binding.clockTimeList;
         clockTimeTable.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        clockTimeTable.setAdapter(createTimeStampListAdapter());
         toggleButton = binding.toggleButton;
-        if (pageViewModel.getClockTimes().size() % 2 == 1) {
-            toggleButton.setChecked(true);
-        }
 
         toggleButton.setOnClickListener(view -> {
             pageViewModel.stamp();
@@ -84,6 +80,7 @@ public class TimeClockStamperFragment extends Fragment {
             pageViewModel.setClockTimesToday(clockTimeDtos);
             updateUiWidgets();
         });
+        updateUiWidgets();
         return binding.getRoot();
     }
 
@@ -110,7 +107,15 @@ public class TimeClockStamperFragment extends Fragment {
     private void updateUiWidgets() {
         updateWorkedToday();
         clockTimeTable.setAdapter(createTimeStampListAdapter());
+        selectLatestInTable();
         toggleButton.setChecked(pageViewModel.getClockTimes().size() % 2 == 1);
+    }
+
+    private void selectLatestInTable() {
+        int count = clockTimeTable.getCount();
+        if (count >= 1) {
+            clockTimeTable.setSelection(count - 1);
+        }
     }
 
     private void updateWorkedToday() {
