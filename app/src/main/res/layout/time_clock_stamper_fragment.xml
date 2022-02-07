@@ -11,53 +11,53 @@
         android:id="@+id/clockTimeList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="13dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="13dp"
+        android:layout_marginEnd="12dp"
         android:layout_marginBottom="7dp"
-        app:layout_constraintBottom_toTopOf="@+id/deleteButton"
+        app:layout_constraintBottom_toTopOf="@+id/addButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/deleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="7dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="326dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="324dp"
         android:text="Delete"
-        app:layout_constraintBottom_toTopOf="@+id/toggleButton"
+        app:layout_constraintBottom_toBottomOf="@+id/toggleButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.962"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clockTimeList" />
+        app:layout_constraintStart_toEndOf="@+id/addButton"
+        app:layout_constraintTop_toTopOf="@+id/clockTimeList" />
 
     <Button
         android:id="@+id/addButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="7dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="13dp"
+        android:layout_marginEnd="160dp"
+        android:layout_marginBottom="5dp"
         android:text="Add"
         app:layout_constraintBottom_toTopOf="@+id/toggleButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.04"
+        app:layout_constraintEnd_toStartOf="@+id/deleteButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clockTimeList"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/clockTimeList" />
 
     <ToggleButton
         android:id="@+id/toggleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="7dp"
+        android:layout_marginEnd="23dp"
+        android:layout_marginBottom="3dp"
         android:background="@drawable/toggle_button_background"
         android:textOff="Clocked out"
         android:textOn="Clocked in"
         app:layout_constraintBottom_toTopOf="@+id/workedToday"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deleteButton" />
+        app:layout_constraintEnd_toEndOf="@+id/deleteButton"
+        app:layout_constraintTop_toBottomOf="@+id/addButton" />
 
     <TextView
         android:id="@+id/workedToday"

@@ -2,6 +2,7 @@ package de.trundicho.timeclockstamper.ui.main;
 
 import androidx.lifecycle.ViewModel;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDataDto;
@@ -42,5 +43,9 @@ public class TimeClockStamperViewModel extends ViewModel {
         ClockTimeDataDto clockTimeDto = new ClockTimeDataDto();
         clockTimeDto.setClockTimes(clockTimeDtos);
         timeClockStamperApi.setToday(clockTimeDto);
+    }
+
+    public ClockTimeDataDto stamp(LocalTime localTime) {
+        return timeClockStamperApi.stamp(localTime);
     }
 }

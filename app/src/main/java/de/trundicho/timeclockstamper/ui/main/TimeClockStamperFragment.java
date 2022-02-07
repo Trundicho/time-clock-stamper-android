@@ -12,6 +12,7 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -50,7 +51,7 @@ public class TimeClockStamperFragment extends Fragment {
         workedToday.setText(workedToday());
         ListView clockTimeTable = binding.clockTimeList;
         clockTimeTable.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        clockTimeTable.setAdapter(createListAdapter());
+        clockTimeTable.setAdapter(createTimeStampListAdapter());
         ToggleButton toggleButton = binding.toggleButton;
         if (pageViewModel.getClockTimes().size() % 2 == 1) {
             toggleButton.setChecked(true);
@@ -58,6 +59,11 @@ public class TimeClockStamperFragment extends Fragment {
         toggleButton.setOnClickListener(view -> {
             pageViewModel.stamp();
             updateUiWidgets(clockTimeTable, toggleButton, workedToday);
+        });
+        binding.addButton.setOnClickListener(view -> {
+            DialogFragment dlg = new TimePickerFragment(pageViewModel, () ->
+                    updateUiWidgets(clockTimeTable, toggleButton, workedToday));
+            dlg.show(getActivity().getSupportFragmentManager(), "TimePicker");
         });
         binding.deleteButton.setOnClickListener(view -> {
             SparseBooleanArray checkedItemPositions = clockTimeTable.getCheckedItemPositions();
@@ -76,21 +82,18 @@ public class TimeClockStamperFragment extends Fragment {
     }
 
     private void updateUiWidgets(ListView clockTimeTable, ToggleButton toggleButton, TextView workedToday) {
-        workedToday.setText(workedToday());
-        clockTimeTable.setAdapter(createListAdapter());
-        if (pageViewModel.getClockTimes().size() % 2 == 1) {
-            toggleButton.setChecked(true);
-        } else {
-            toggleButton.setChecked(false);
-        }
+        String text = workedToday();
+        workedToday.setText(text);
+        clockTimeTable.setAdapter(createTimeStampListAdapter());
+        toggleButton.setChecked(pageViewModel.getClockTimes().size() % 2 == 1);
     }
 
     @NonNull
-    private SimpleAdapter createListAdapter() {
+    private SimpleAdapter createTimeStampListAdapter() {
         String[] from = {"Date"};
         int[] to = {android.R.id.text1};
         return new SimpleAdapter(this.getContext(),
-                buildData(),
+                buildStampData(),
                 android.R.layout.simple_list_item_multiple_choice, from, to);
     }
 
@@ -105,8 +108,8 @@ public class TimeClockStamperFragment extends Fragment {
         binding = null;
     }
 
-    private List<Map<String, String>> buildData() {
-        List<String> times = pageViewModel.getClockTimes().stream().map(c -> formatDate(c)).collect(Collectors.toList());
+    private List<Map<String, String>> buildStampData() {
+        List<String> times = pageViewModel.getClockTimes().stream().map(this::formatDate).collect(Collectors.toList());
         ArrayList<Map<String, String>> list = new ArrayList<>();
         times.forEach(t -> list.add(putData(t)));
         return list;
@@ -114,7 +117,7 @@ public class TimeClockStamperFragment extends Fragment {
 
     @NonNull
     private String formatDate(ClockTimeDto c) {
-        return new DateTimeFormatterBuilder().appendPattern("dd.MM.yy - HH:mm:ss").toFormatter().format(c.getDate());
+        return new DateTimeFormatterBuilder().appendPattern("HH:mm:ss a").toFormatter().format(c.getDate());
     }
 
     private Map<String, String> putData(String name) {
