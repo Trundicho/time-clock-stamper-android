@@ -1,6 +1,7 @@
 package de.trundicho.timeclockstamper.ui.main;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,8 +29,13 @@ import de.trundicho.timeclockstamper.databinding.TimeClockStamperFragmentBinding
 
 
 public class TimeClockStamperFragment extends Fragment {
+    private Handler handler = new Handler();
     private TimeClockStamperViewModel pageViewModel;
     private TimeClockStamperFragmentBinding binding;
+    private ListView clockTimeTable;
+    private ToggleButton toggleButton;
+    private TextView workedToday;
+    private Runnable updateUiLoop;
 
     public static TimeClockStamperFragment newInstance() {
         return new TimeClockStamperFragment();
@@ -47,22 +53,22 @@ public class TimeClockStamperFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         this.binding = TimeClockStamperFragmentBinding.inflate(inflater, container, false);
-        TextView workedToday = binding.workedToday;
+        workedToday = binding.workedToday;
         workedToday.setText(workedToday());
-        ListView clockTimeTable = binding.clockTimeList;
+        clockTimeTable = binding.clockTimeList;
         clockTimeTable.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         clockTimeTable.setAdapter(createTimeStampListAdapter());
-        ToggleButton toggleButton = binding.toggleButton;
+        toggleButton = binding.toggleButton;
         if (pageViewModel.getClockTimes().size() % 2 == 1) {
             toggleButton.setChecked(true);
         }
+
         toggleButton.setOnClickListener(view -> {
             pageViewModel.stamp();
-            updateUiWidgets(clockTimeTable, toggleButton, workedToday);
+            updateUiWidgets();
         });
         binding.addButton.setOnClickListener(view -> {
-            DialogFragment dlg = new TimePickerFragment(pageViewModel, () ->
-                    updateUiWidgets(clockTimeTable, toggleButton, workedToday));
+            DialogFragment dlg = new TimePickerFragment(pageViewModel, this::updateUiWidgets);
             dlg.show(getActivity().getSupportFragmentManager(), "TimePicker");
         });
         binding.deleteButton.setOnClickListener(view -> {
@@ -76,16 +82,40 @@ public class TimeClockStamperFragment extends Fragment {
                 }
             }
             pageViewModel.setClockTimesToday(clockTimeDtos);
-            updateUiWidgets(clockTimeTable, toggleButton, workedToday);
+            updateUiWidgets();
         });
         return binding.getRoot();
     }
 
-    private void updateUiWidgets(ListView clockTimeTable, ToggleButton toggleButton, TextView workedToday) {
-        String text = workedToday();
-        workedToday.setText(text);
+    @Override
+    public void onResume() {
+        int delay = 10000;
+        updateUiLoop = new Runnable() {
+            @Override
+            public void run() {
+                handler.postDelayed(this, delay);
+                updateWorkedToday();
+            }
+        };
+        handler.postDelayed(updateUiLoop, delay);
+        super.onResume();
+    }
+    @Override
+    public void onPause() {
+        //stop handler when activity not visible super.onPause();
+        handler.removeCallbacks(updateUiLoop);
+        super.onPause();
+    }
+
+    private void updateUiWidgets() {
+        updateWorkedToday();
         clockTimeTable.setAdapter(createTimeStampListAdapter());
         toggleButton.setChecked(pageViewModel.getClockTimes().size() % 2 == 1);
+    }
+
+    private void updateWorkedToday() {
+        String text = workedToday();
+        workedToday.setText(text);
     }
 
     @NonNull
@@ -117,7 +147,7 @@ public class TimeClockStamperFragment extends Fragment {
 
     @NonNull
     private String formatDate(ClockTimeDto c) {
-        return new DateTimeFormatterBuilder().appendPattern("HH:mm:ss a").toFormatter().format(c.getDate());
+        return new DateTimeFormatterBuilder().appendPattern("HH:mm a").toFormatter().format(c.getDate());
     }
 
     private Map<String, String> putData(String name) {
