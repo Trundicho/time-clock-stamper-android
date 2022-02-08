@@ -13,10 +13,10 @@ import java.util.Calendar;
 public class TimePickerFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener {
 
-    private final TimeClockStamperViewModel viewModel;
+    private final TodayViewModel viewModel;
     private final Runnable updateUiCallback;
 
-    public TimePickerFragment(TimeClockStamperViewModel viewModel, Runnable updateUiCallback) {
+    public TimePickerFragment(TodayViewModel viewModel, Runnable updateUiCallback) {
         this.viewModel = viewModel;
         this.updateUiCallback = updateUiCallback;
     }

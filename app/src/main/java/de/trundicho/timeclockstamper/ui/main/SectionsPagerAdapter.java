@@ -27,12 +27,14 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
-        if (position == 0) {
-            return TimeClockStamperFragment.newInstance();
+        switch (position) {
+            case 0:
+                return TodayFragment.newInstance();
+            case 1:
+                return PastFragment.newInstance();
+            default:
+                return PlaceholderFragment.newInstance(position + 1);
         }
-        return PlaceholderFragment.newInstance(position + 1);
     }
 
     @Nullable
@@ -43,7 +45,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        // Show 2 total pages.
         return 3;
     }
 }

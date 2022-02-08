@@ -10,11 +10,11 @@ import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDto;
 import de.trundicho.timeclockstamper.core.adapters.api.TimeClockStamperApi;
 import de.trundicho.timeclockstamper.core.adapters.api.TimeClockStamperApiImpl;
 
-public class TimeClockStamperViewModel extends ViewModel {
+public class TodayViewModel extends ViewModel {
     private final AndroidFilePersistence clockTimePersistencePort;
     private final TimeClockStamperApi timeClockStamperApi;
 
-    public TimeClockStamperViewModel() {
+    public TodayViewModel() {
         String timeZone = "Europe/Berlin";
 //        https://technobyte.org/write-text-files-android-build-scratchpad-app-tutorial/
         clockTimePersistencePort = new AndroidFilePersistence("",

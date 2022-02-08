@@ -30,23 +30,23 @@ import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDto;
 import de.trundicho.timeclockstamper.databinding.TimeClockStamperFragmentBinding;
 
 
-public class TimeClockStamperFragment extends Fragment {
-    private Handler handler = new Handler();
-    private TimeClockStamperViewModel pageViewModel;
+public class TodayFragment extends Fragment {
+    private final Handler handler = new Handler();
+    private TodayViewModel pageViewModel;
     private TimeClockStamperFragmentBinding binding;
     private ListView clockTimeTable;
     private ToggleButton toggleButton;
     private TextView workedToday;
     private Runnable updateUiLoop;
 
-    public static TimeClockStamperFragment newInstance() {
-        return new TimeClockStamperFragment();
+    public static TodayFragment newInstance() {
+        return new TodayFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pageViewModel = new ViewModelProvider(this).get(TimeClockStamperViewModel.class);
+        pageViewModel = new ViewModelProvider(this).get(TodayViewModel.class);
         pageViewModel.setActivity(new ActivityCallback(getActivity()));
 
     }
@@ -135,7 +135,7 @@ public class TimeClockStamperFragment extends Fragment {
                 android.R.layout.simple_list_item_multiple_choice, from, to);
     }
 
-    public class ColorArrayAdapter extends SimpleAdapter {
+    public static class ColorArrayAdapter extends SimpleAdapter {
 
         public ColorArrayAdapter(Context context, List<Map<String, String>> data,
                                  int resource, String[] from, int[] to) {
