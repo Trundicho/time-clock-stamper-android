@@ -161,7 +161,7 @@ public class PastFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view = (View) super.getView(position, convertView, parent);
+            View view = super.getView(position, convertView, parent);
             String color = "#f7ffe8";
             if (clockTimeTable.getCount() % 2 == 1) {
                 color = "#fff2da";
@@ -178,7 +178,7 @@ public class PastFragment extends Fragment {
 
     @NonNull
     private String workedToday(int year, int month, int day) {
-        return "Worked today: " + pageViewModel.getWorkedToday(year, month, day);
+        return "Worked: " + pageViewModel.getWorkedTodayAndOvertime(year, month, day);
     }
 
     @Override

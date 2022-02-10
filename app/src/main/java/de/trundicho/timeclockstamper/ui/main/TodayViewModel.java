@@ -27,6 +27,10 @@ public class TodayViewModel extends ViewModel {
         return timeClockStamperApi.getTimeClockResponse().getHoursWorkedToday();
     }
 
+    public String getOvertimeMonth() {
+        return timeClockStamperApi.getTimeClockResponse().getOvertimeMonth();
+    }
+
     public List<ClockTimeDto> getClockTimes() {
         return timeClockStamperApi.getTimeClockResponse().getClockTimes();
     }

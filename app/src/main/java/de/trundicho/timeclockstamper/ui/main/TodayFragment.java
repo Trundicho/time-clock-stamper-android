@@ -157,7 +157,7 @@ public class TodayFragment extends Fragment {
 
     @NonNull
     private String workedToday() {
-        return "Worked today: " + pageViewModel.getWorkedToday();
+        return "Worked: " + pageViewModel.getWorkedToday() + ". Month: " + pageViewModel.getOvertimeMonth();
     }
 
     @Override
