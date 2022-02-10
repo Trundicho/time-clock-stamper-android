@@ -8,10 +8,10 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,17 +27,17 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDto;
-import de.trundicho.timeclockstamper.databinding.TimeClockStamperFragmentBinding;
+import de.trundicho.timeclockstamper.databinding.PastFragmentBinding;
 
 
 public class PastFragment extends Fragment {
     private final Handler handler = new Handler();
-    private TodayViewModel pageViewModel;
-    private TimeClockStamperFragmentBinding binding;
+    private PastViewModel pageViewModel;
+    private PastFragmentBinding binding;
     private ListView clockTimeTable;
-    private ToggleButton toggleButton;
     private TextView workedToday;
     private Runnable updateUiLoop;
+    private DatePicker datePicker;
 
     public static PastFragment newInstance() {
         return new PastFragment();
@@ -46,7 +46,7 @@ public class PastFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pageViewModel = new ViewModelProvider(this).get(TodayViewModel.class);
+        pageViewModel = new ViewModelProvider(this).get(PastViewModel.class);
         pageViewModel.setActivity(new ActivityCallback(getActivity()));
 
     }
@@ -54,36 +54,47 @@ public class PastFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        this.binding = TimeClockStamperFragmentBinding.inflate(inflater, container, false);
+        this.binding = PastFragmentBinding.inflate(inflater, container, false);
+        datePicker = binding.datePicker;
+        datePicker.setOnDateChangedListener((datePicker, year, month, day) ->
+                updateUiWidgets(year, month + 1, day));
         workedToday = binding.workedToday;
-        workedToday.setText(workedToday());
+        workedToday.setText(workedToday(datePicker.getYear(),
+                getMonth(),
+                datePicker.getDayOfMonth()));
         clockTimeTable = binding.clockTimeList;
         clockTimeTable.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        toggleButton = binding.toggleButton;
 
-        toggleButton.setOnClickListener(view -> {
-            pageViewModel.stamp();
-            updateUiWidgets();
-        });
         binding.addButton.setOnClickListener(view -> {
-            DialogFragment dlg = new TimePickerFragment(pageViewModel, this::updateUiWidgets);
+            DialogFragment dlg = new PastTimePickerFragment(pageViewModel, () ->
+                    updateUiWidgets(datePicker.getYear(),
+                            getMonth(),
+                            datePicker.getDayOfMonth()),
+                    datePicker.getYear(), getMonth(), datePicker.getDayOfMonth());
             dlg.show(getActivity().getSupportFragmentManager(), "TimePicker");
         });
         binding.deleteButton.setOnClickListener(view -> {
             SparseBooleanArray checkedItemPositions = clockTimeTable.getCheckedItemPositions();
 
-            List<ClockTimeDto> currentStampState = pageViewModel.getClockTimes();
+            List<ClockTimeDto> currentStampState = pageViewModel.getClockTimes(
+                    datePicker.getYear(), getMonth(), datePicker.getDayOfMonth()
+            );
             List<ClockTimeDto> clockTimeDtos = new ArrayList<>(currentStampState);
             for (int i = clockTimeDtos.size() - 1; i >= 0; i--) {
                 if (checkedItemPositions.get(i)) {
                     clockTimeDtos.remove(i);
                 }
             }
-            pageViewModel.setClockTimesToday(clockTimeDtos);
-            updateUiWidgets();
+            pageViewModel.setClockTimesToday(clockTimeDtos, datePicker.getYear(),
+                    getMonth(), datePicker.getDayOfMonth());
+            updateUiWidgets(datePicker.getYear(), getMonth(), datePicker.getDayOfMonth());
         });
-        updateUiWidgets();
+        updateUiWidgets(datePicker.getYear(), getMonth(), datePicker.getDayOfMonth());
         return binding.getRoot();
+    }
+
+    private int getMonth() {
+        return datePicker.getMonth() + 1;
     }
 
     @Override
@@ -93,7 +104,9 @@ public class PastFragment extends Fragment {
             @Override
             public void run() {
                 handler.postDelayed(this, delay);
-                updateWorkedToday();
+                updateWorkedToday(datePicker.getYear(),
+                        getMonth(),
+                        datePicker.getDayOfMonth());
             }
         };
         handler.postDelayed(updateUiLoop, delay);
@@ -107,11 +120,10 @@ public class PastFragment extends Fragment {
         super.onPause();
     }
 
-    private void updateUiWidgets() {
-        updateWorkedToday();
-        clockTimeTable.setAdapter(createTimeStampListAdapter());
+    private void updateUiWidgets(int year, int month, int day) {
+        updateWorkedToday(year, month, day);
+        clockTimeTable.setAdapter(createTimeStampListAdapter(year, month, day));
         selectLatestInTable();
-        toggleButton.setChecked(pageViewModel.getClockTimes().size() % 2 == 1);
     }
 
     private void selectLatestInTable() {
@@ -121,32 +133,41 @@ public class PastFragment extends Fragment {
         }
     }
 
-    private void updateWorkedToday() {
-        String text = workedToday();
+    private void updateWorkedToday(int year, int month, int day) {
+        String text = workedToday(year, month, day);
         workedToday.setText(text);
     }
 
     @NonNull
-    private SimpleAdapter createTimeStampListAdapter() {
+    private SimpleAdapter createTimeStampListAdapter(int year, int month, int day) {
         String[] from = {"Date"};
         int[] to = {android.R.id.text1};
         return new ColorArrayAdapter(this.getContext(),
-                buildStampData(),
-                android.R.layout.simple_list_item_multiple_choice, from, to);
+                buildStampData(year, month, day),
+                android.R.layout.simple_list_item_multiple_choice, from, to,
+                clockTimeTable);
     }
 
     public static class ColorArrayAdapter extends SimpleAdapter {
 
+        private final ListView clockTimeTable;
+
         public ColorArrayAdapter(Context context, List<Map<String, String>> data,
-                                 int resource, String[] from, int[] to) {
+                                 int resource, String[] from, int[] to,
+                                 ListView clockTimeTable) {
             super(context, data, resource, from, to);
+            this.clockTimeTable = clockTimeTable;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = (View) super.getView(position, convertView, parent);
+            String color = "#f7ffe8";
+            if (clockTimeTable.getCount() % 2 == 1) {
+                color = "#fff2da";
+            }
             if (position % 2 == 1) {
-                view.setBackgroundColor(Color.parseColor("#f7ffe8"));
+                view.setBackgroundColor(Color.parseColor(color));
             } else {
                 view.setBackgroundColor(Color.WHITE);
             }
@@ -156,8 +177,8 @@ public class PastFragment extends Fragment {
     }
 
     @NonNull
-    private String workedToday() {
-        return "Worked today: " + pageViewModel.getWorkedToday();
+    private String workedToday(int year, int month, int day) {
+        return "Worked today: " + pageViewModel.getWorkedToday(year, month, day);
     }
 
     @Override
@@ -166,8 +187,9 @@ public class PastFragment extends Fragment {
         binding = null;
     }
 
-    private List<Map<String, String>> buildStampData() {
-        List<String> times = pageViewModel.getClockTimes().stream().map(this::formatDate).collect(Collectors.toList());
+    private List<Map<String, String>> buildStampData(int year, int month, int day) {
+        List<String> times = pageViewModel.getClockTimes(year, month, day).stream()
+                .map(this::formatDate).collect(Collectors.toList());
         ArrayList<Map<String, String>> list = new ArrayList<>();
         times.forEach(t -> list.add(putData(t)));
         return list;

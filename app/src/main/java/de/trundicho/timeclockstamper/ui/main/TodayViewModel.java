@@ -48,4 +48,5 @@ public class TodayViewModel extends ViewModel {
     public ClockTimeDataDto stamp(LocalTime localTime) {
         return timeClockStamperApi.stamp(localTime);
     }
+
 }

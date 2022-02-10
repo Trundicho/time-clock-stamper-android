@@ -2,6 +2,7 @@ package de.trundicho.timeclockstamper.ui.main;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -44,34 +45,42 @@ public class AndroidFilePersistence implements ClockTimePersistencePort {
                 .build();
     }
 
-    public void write(List<ClockTime> clockTimes) {
-        LocalDateTime currentDate = getCurrentDate();
+    public void write(List<ClockTime> clockTimes, Integer year, Integer month) {
+        LocalDateTime localDate = localDate(year, month);
         List<ClockTime> clockTimesOfCurrentMonth = clockTimes.stream()
-                .filter(c -> currentDate.getMonth().equals(c.getDate().getMonth())
-                        && currentDate.getYear() == c.getDate().getYear())
+                .filter(c -> localDate.getMonth().equals(c.getDate().getMonth())
+                        && localDate.getYear() == c.getDate().getYear())
                 .sorted()
                 .collect(Collectors.toList());
         try {
             String valueAsString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(clockTimesOfCurrentMonth);
-            writeToFile(valueAsString, createFileName());
+            writeToFile(valueAsString, createFileName(year, month));
         } catch (IOException e) {
             System.err.println("Can not write to file " + e.getMessage());
         }
     }
 
-    private String createFileName() {
-        LocalDateTime currentDate = getCurrentDate();
+    private String createFileName(Integer year, Integer month) {
+        LocalDateTime currentDate = localDate(year, month);
         int currentMonth = currentDate.getMonthValue();
-        String month = currentMonth < 10 ? "0" + currentMonth : "" + currentMonth;
         int currentYear = currentDate.getYear();
-        return persistenceFolder + currentYear + "-" + month + "-" + persistenceFile;
+        return persistenceFolder + currentYear + "-" + prependZero(currentMonth) + "-" + persistenceFile;
     }
 
-    private LocalDateTime getCurrentDate() {
+    @NonNull
+    private String prependZero(int currentMonth) {
+        return currentMonth < 10 ? "0" + currentMonth : "" + currentMonth;
+    }
+
+    private LocalDateTime localDate(Integer year, Integer month) {
+        LocalDateTime now = getLocalDateTime();
+        return LocalDateTime.of(year == null ? now.getYear() : year, month == null ? now.getMonth().getValue() : month, 1, 0, 0);
+    }
+
+    private LocalDateTime getLocalDateTime() {
         return LocalDateTime.now(ZoneId.of(timezone));
     }
-
-    public List<ClockTime> read() {
+    public List<ClockTime> read(Integer year, Integer month) {
         List<ClockTime> clockTimes = new ArrayList<>();
         try {
             FragmentActivity activity = activityCallback.getActivity();

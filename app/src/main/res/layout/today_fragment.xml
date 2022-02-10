@@ -46,15 +46,15 @@
 
     <ToggleButton
         android:id="@+id/toggleButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="229dp"
+        android:layout_height="225dp"
         android:layout_marginBottom="3dp"
         android:background="@drawable/toggle_button_background"
         android:textOff="Clocked out"
         android:textOn="Clocked in"
         app:layout_constraintBottom_toTopOf="@+id/workedToday"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.615"
+        app:layout_constraintHorizontal_bias="0.56"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addButton" />
 

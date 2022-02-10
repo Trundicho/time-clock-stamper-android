@@ -27,13 +27,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDto;
-import de.trundicho.timeclockstamper.databinding.TimeClockStamperFragmentBinding;
+import de.trundicho.timeclockstamper.databinding.TodayFragmentBinding;
 
 
 public class TodayFragment extends Fragment {
     private final Handler handler = new Handler();
     private TodayViewModel pageViewModel;
-    private TimeClockStamperFragmentBinding binding;
+    private TodayFragmentBinding binding;
     private ListView clockTimeTable;
     private ToggleButton toggleButton;
     private TextView workedToday;
@@ -54,7 +54,7 @@ public class TodayFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        this.binding = TimeClockStamperFragmentBinding.inflate(inflater, container, false);
+        this.binding = TodayFragmentBinding.inflate(inflater, container, false);
         workedToday = binding.workedToday;
         workedToday.setText(workedToday());
         clockTimeTable = binding.clockTimeList;
@@ -66,7 +66,7 @@ public class TodayFragment extends Fragment {
             updateUiWidgets();
         });
         binding.addButton.setOnClickListener(view -> {
-            DialogFragment dlg = new TimePickerFragment(pageViewModel, this::updateUiWidgets);
+            DialogFragment dlg = new TodayTimePickerFragment(pageViewModel, this::updateUiWidgets);
             dlg.show(getActivity().getSupportFragmentManager(), "TimePicker");
         });
         binding.deleteButton.setOnClickListener(view -> {

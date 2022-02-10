@@ -10,13 +10,13 @@ import androidx.fragment.app.DialogFragment;
 import java.time.LocalTime;
 import java.util.Calendar;
 
-public class TimePickerFragment extends DialogFragment
+public class TodayTimePickerFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener {
 
     private final TodayViewModel viewModel;
     private final Runnable updateUiCallback;
 
-    public TimePickerFragment(TodayViewModel viewModel, Runnable updateUiCallback) {
+    public TodayTimePickerFragment(TodayViewModel viewModel, Runnable updateUiCallback) {
         this.viewModel = viewModel;
         this.updateUiCallback = updateUiCallback;
     }
