@@ -33,7 +33,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
             case 1:
                 return PastFragment.newInstance();
             default:
-                return PlaceholderFragment.newInstance(position + 1);
+                return InsightsFragment.newInstance();
         }
     }
 

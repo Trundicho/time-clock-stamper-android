@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -80,6 +81,23 @@ public class AndroidFilePersistence implements ClockTimePersistencePort {
     private LocalDateTime getLocalDateTime() {
         return LocalDateTime.now(ZoneId.of(timezone));
     }
+
+    public String readJson(Integer year, Integer month) {
+        List<ClockTime> clockTimes = read(year, month);
+        LocalDateTime localDate = localDate(year, month);
+        List<ClockTime> clockTimesOfCurrentMonth = clockTimes.stream()
+                .filter(c -> localDate.getMonth().equals(c.getDate().getMonth())
+                        && localDate.getYear() == c.getDate().getYear())
+                .sorted()
+                .collect(Collectors.toList());
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(clockTimesOfCurrentMonth);
+        } catch (JsonProcessingException e) {
+            System.err.println("Can not read from file " + e.getMessage());
+            return "Can not read from file " + e.getMessage();
+        }
+    }
+
     public List<ClockTime> read(Integer year, Integer month) {
         List<ClockTime> clockTimes = new ArrayList<>();
         try {
@@ -97,6 +115,11 @@ public class AndroidFilePersistence implements ClockTimePersistencePort {
 
         } catch (NullPointerException | IOException e) {
             System.err.println("Can not read from file " + e.getMessage());
+        }
+        if (year != null && month != null) {
+            return clockTimes.stream()
+                    .filter(c -> c.getDate().getYear() == year)
+                    .filter(c -> c.getDate().getMonthValue() == month).collect(Collectors.toList());
         }
         return clockTimes;
     }
