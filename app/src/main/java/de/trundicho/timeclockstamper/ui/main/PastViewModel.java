@@ -16,18 +16,24 @@ public class PastViewModel extends ViewModel {
     private final TimeClockStamperApi timeClockStamperApi;
 
     public PastViewModel() {
-        String timeZone = "Europe/Berlin";
-//        https://technobyte.org/write-text-files-android-build-scratchpad-app-tutorial/
-        clockTimePersistencePort = new AndroidFilePersistence("",
-                "test-clockTime-list.json",
-                timeZone);
+        this(new AndroidFilePersistence("",
+                        "test-clockTime-list.json",
+                        "Europe/Berlin"), "Europe/Berlin");
+    }
+
+    public PastViewModel(AndroidFilePersistence clockTimePersistencePort, String timeZone) {
+        this.clockTimePersistencePort = clockTimePersistencePort;
         timeClockStamperApi = new TimeClockStamperApiImpl(timeZone, clockTimePersistencePort);
     }
 
-    public String getWorkedTodayAndOvertime(int year, int month, int day) {
+    public String getWorkedToday(int year, int month, int day) {
         ClockTimeDataDto clockStamperApiDay = timeClockStamperApi.getDay(year, month, day);
-        return clockStamperApiDay.getHoursWorkedToday()
-                + ". Month: " + clockStamperApiDay.getOvertimeMonth();
+        return clockStamperApiDay.getHoursWorkedToday();
+    }
+
+    public String getOvertime(int year, int month, int day) {
+        ClockTimeDataDto clockStamperApiDay = timeClockStamperApi.getDay(year, month, day);
+        return clockStamperApiDay.getOvertimeMonth();
     }
 
     public List<ClockTimeDto> getClockTimes(int year, int month, int day) {

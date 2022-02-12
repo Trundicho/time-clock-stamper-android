@@ -178,7 +178,9 @@ public class PastFragment extends Fragment {
 
     @NonNull
     private String workedToday(int year, int month, int day) {
-        return "Worked: " + pageViewModel.getWorkedTodayAndOvertime(year, month, day);
+        String workedToday = pageViewModel.getWorkedToday(year, month, day);
+        String overtime = pageViewModel.getOvertime(year, month, day);
+        return "Worked: " + workedToday + " Month: " + overtime;
     }
 
     @Override
