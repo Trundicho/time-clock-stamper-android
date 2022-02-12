@@ -12,14 +12,16 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
@@ -61,7 +63,7 @@ public class AndroidFilePersistence implements ClockTimePersistencePort {
         }
     }
 
-    private String createFileName(Integer year, Integer month) {
+    public String createFileName(Integer year, Integer month) {
         LocalDateTime currentDate = localDate(year, month);
         int currentMonth = currentDate.getMonthValue();
         int currentYear = currentDate.getYear();
@@ -80,6 +82,42 @@ public class AndroidFilePersistence implements ClockTimePersistencePort {
 
     private LocalDateTime getLocalDateTime() {
         return LocalDateTime.now(ZoneId.of(timezone));
+    }
+
+    public void writeJson(String json) {
+        FragmentActivity activity = activityCallback.getActivity();
+        List<String> completeDb = getFilePersistence(activity);
+        try {
+            List<ClockTime> clockTimes = objectMapper.readValue(json, new TypeReference<List<ClockTime>>() {
+
+            });
+            Map<String, List<ClockTime>> map = new HashMap<>();
+            clockTimes.forEach(c -> {
+                String key = c.getDate().getYear() + "_" + c.getDate().getMonthValue();
+                if (!map.containsKey(key)) {
+                    map.put(key, new ArrayList<>());
+                }
+                map.get(key).add(c);
+            });
+            map.keySet().forEach(k -> {
+                String[] split = k.split("_");
+                Integer year = Integer.valueOf(split[0]);
+                Integer month = Integer.valueOf(split[1]);
+                String fileName = createFileName(year, month);
+                Optional<String> any = completeDb.stream().filter(c -> c.equals(fileName)).findAny();
+                any.ifPresent(activity::deleteFile);
+                write(map.get(k), year, month);
+            });
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @NonNull
+    private List<String> getFilePersistence(FragmentActivity activity) {
+        String[] files = activity.fileList();
+        List<String> strings = new ArrayList<>(Arrays.asList(files));
+        return strings.stream().filter(pathname -> pathname.endsWith(persistenceFile)).collect(Collectors.toList());
     }
 
     public String readJson(Integer year, Integer month) {
@@ -102,9 +140,7 @@ public class AndroidFilePersistence implements ClockTimePersistencePort {
         List<ClockTime> clockTimes = new ArrayList<>();
         try {
             FragmentActivity activity = activityCallback.getActivity();
-            String[] files = activity.fileList();
-            List<String> strings = new ArrayList<>(Arrays.asList(files));
-            List<String> collect = strings.stream().filter(pathname -> pathname.endsWith(persistenceFile)).collect(Collectors.toList());
+            List<String> collect = getFilePersistence(activity);
 
             for (String file : collect) {
                 FileInputStream fileInputStream = activity.openFileInput(file);
@@ -130,9 +166,6 @@ public class AndroidFilePersistence implements ClockTimePersistencePort {
                     Context.MODE_PRIVATE));
             outputStreamWriter.write(message);
             outputStreamWriter.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
