@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDataDto;
 import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDto;
 import de.trundicho.timeclockstamper.databinding.PastFragmentBinding;
 
@@ -178,8 +179,9 @@ public class PastFragment extends Fragment {
 
     @NonNull
     private String workedToday(int year, int month, int day) {
-        String workedToday = pageViewModel.getWorkedToday(year, month, day);
-        String overtime = pageViewModel.getOvertime(year, month, day);
+        ClockTimeDataDto d = pageViewModel.getDay(year, month, day);
+        String workedToday = d.getHoursWorkedToday();
+        String overtime = d.getOvertimeMonth();
         return "Worked: " + workedToday + " Month: " + overtime;
     }
 

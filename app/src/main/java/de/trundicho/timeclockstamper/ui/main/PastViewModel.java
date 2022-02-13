@@ -26,14 +26,8 @@ public class PastViewModel extends ViewModel {
         timeClockStamperApi = new TimeClockStamperApiImpl(timeZone, clockTimePersistencePort);
     }
 
-    public String getWorkedToday(int year, int month, int day) {
-        ClockTimeDataDto clockStamperApiDay = timeClockStamperApi.getDay(year, month, day);
-        return clockStamperApiDay.getHoursWorkedToday();
-    }
-
-    public String getOvertime(int year, int month, int day) {
-        ClockTimeDataDto clockStamperApiDay = timeClockStamperApi.getDay(year, month, day);
-        return clockStamperApiDay.getOvertimeMonth();
+    public ClockTimeDataDto getDay(int year, int month, int day) {
+        return timeClockStamperApi.getDay(year, month, day);
     }
 
     public List<ClockTimeDto> getClockTimes(int year, int month, int day) {
@@ -59,7 +53,4 @@ public class PastViewModel extends ViewModel {
         return timeClockStamperApi.setDay(apiDay, year, month, day);
     }
 
-    public String getOvertimeMonth(int year, int month) {
-        return null;
-    }
 }

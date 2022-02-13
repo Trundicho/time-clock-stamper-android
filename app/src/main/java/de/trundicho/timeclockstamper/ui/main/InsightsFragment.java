@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDataDto;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
 import de.trundicho.timeclockstamper.databinding.InsightsFragmentBinding;
 
@@ -108,8 +109,11 @@ public class InsightsFragment extends Fragment {
             int y = Integer.parseInt(split[0]);
             int m = Integer.parseInt(split[1]);
             int d = Integer.parseInt(split[2]);
+//            LocalDateTime dateTime = LocalDateTime.of(y, m, d, 0, 0);
+//            String dd = new DateTimeFormatterBuilder().appendPattern("D").toFormatter().format(dateTime);
+            ClockTimeDataDto day = pastViewModel.getDay(y, m, d);
             return (y-2000) + "." + prependZero(m) + "." + prependZero(d)
-                    + "::" + pastViewModel.getWorkedToday(y, m, d) + "::M:" + pastViewModel.getOvertime(y, m, d);
+                    + d + "::" + day.getHoursWorkedToday() + "::M:" + day.getOvertimeMonth();
         }).collect(Collectors.toList());
         List<Map<String, String>> list = new ArrayList<>();
         Stream<String> sorted = times.stream().sorted(Comparator.reverseOrder());
@@ -186,19 +190,25 @@ public class InsightsFragment extends Fragment {
 
     public static class ColorArrayAdapter extends SimpleAdapter {
 
+        private final List<Map<String, String>> data;
+
         public ColorArrayAdapter(Context context, List<Map<String, String>> data,
                                  int resource, String[] from, int[] to) {
             super(context, data, resource, from, to);
+            this.data = data;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
-            String color = "#f7ffe8";
-            if (position % 2 == 1) {
-                view.setBackgroundColor(Color.parseColor(color));
+            Map<String, String> map = data.get(position);
+            String value = map.get("Date");
+            if (value.contains("-")) {
+                view.setBackgroundColor(Color.parseColor("#fff2da"));
+            } else if(value.contains("Can not compute")){
+                view.setBackgroundColor(Color.parseColor("#ff9999"));
             } else {
-                view.setBackgroundColor(Color.WHITE);
+                view.setBackgroundColor(Color.parseColor("#f7ffe8"));
             }
             return view;
         }
