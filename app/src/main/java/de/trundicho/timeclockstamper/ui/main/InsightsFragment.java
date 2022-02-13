@@ -113,7 +113,7 @@ public class InsightsFragment extends Fragment {
 //            String dd = new DateTimeFormatterBuilder().appendPattern("D").toFormatter().format(dateTime);
             ClockTimeDataDto day = pastViewModel.getDay(y, m, d);
             return (y-2000) + "." + prependZero(m) + "." + prependZero(d)
-                    + d + "::" + day.getHoursWorkedToday() + "::M:" + day.getOvertimeMonth();
+                    + "::" + day.getHoursWorkedToday() + "::M:" + day.getOvertimeMonth();
         }).collect(Collectors.toList());
         List<Map<String, String>> list = new ArrayList<>();
         Stream<String> sorted = times.stream().sorted(Comparator.reverseOrder());
@@ -203,7 +203,7 @@ public class InsightsFragment extends Fragment {
             View view = super.getView(position, convertView, parent);
             Map<String, String> map = data.get(position);
             String value = map.get("Date");
-            if (value.contains("-")) {
+            if (!value.split("::")[1].contains("-")) {
                 view.setBackgroundColor(Color.parseColor("#fff2da"));
             } else if(value.contains("Can not compute")){
                 view.setBackgroundColor(Color.parseColor("#ff9999"));
