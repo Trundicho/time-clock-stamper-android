@@ -19,6 +19,7 @@ import android.widget.SimpleAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -44,8 +45,7 @@ import de.trundicho.timeclockstamper.databinding.InsightsFragmentBinding;
 public class InsightsFragment extends Fragment {
     private InsightsFragmentBinding binding;
     private AndroidFilePersistence androidFilePersistence;
-    private PastViewModel pastViewModel;
-    private ListView clockTimeDayList;
+    private InsightsViewModel pastViewModel;
 
     public static InsightsFragment newInstance() {
         return new InsightsFragment();
@@ -54,19 +54,16 @@ public class InsightsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String timeZone = "Europe/Berlin";
-        androidFilePersistence = new AndroidFilePersistence("",
-                "test-clockTime-list.json",
-                timeZone);
-        androidFilePersistence.setActivityCallBack(new ActivityCallback(getActivity()));
-        pastViewModel = new PastViewModel(androidFilePersistence, timeZone);
+        pastViewModel = new ViewModelProvider(this).get(InsightsViewModel.class);
+        pastViewModel.setActivity(new ActivityCallback(getActivity()));
+        androidFilePersistence = pastViewModel.getFilePersistence();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         this.binding = InsightsFragmentBinding.inflate(inflater, container, false);
-        clockTimeDayList = binding.clockTimeDayList;
+        ListView clockTimeDayList = binding.clockTimeDayList;
         clockTimeDayList.setAdapter(createTimeStampListAdapter());
         Button exportButton = binding.exportButton;
         exportButton.setOnClickListener(view -> {

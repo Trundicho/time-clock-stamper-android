@@ -97,29 +97,29 @@ public class PastFragment extends Fragment {
     private int getMonth() {
         return datePicker.getMonth() + 1;
     }
-
-    @Override
-    public void onResume() {
-        int delay = 10000;
-        updateUiLoop = new Runnable() {
-            @Override
-            public void run() {
-                handler.postDelayed(this, delay);
-                updateWorkedToday(datePicker.getYear(),
-                        getMonth(),
-                        datePicker.getDayOfMonth());
-            }
-        };
-        handler.postDelayed(updateUiLoop, delay);
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        //stop handler when activity not visible super.onPause();
-        handler.removeCallbacks(updateUiLoop);
-        super.onPause();
-    }
+//
+//    @Override
+//    public void onResume() {
+//        int delay = 10000;
+//        updateUiLoop = new Runnable() {
+//            @Override
+//            public void run() {
+//                handler.postDelayed(this, delay);
+//                updateWorkedToday(datePicker.getYear(),
+//                        getMonth(),
+//                        datePicker.getDayOfMonth());
+//            }
+//        };
+//        handler.postDelayed(updateUiLoop, delay);
+//        super.onResume();
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        //stop handler when activity not visible super.onPause();
+//        handler.removeCallbacks(updateUiLoop);
+//        super.onPause();
+//    }
 
     private void updateUiWidgets(int year, int month, int day) {
         updateWorkedToday(year, month, day);

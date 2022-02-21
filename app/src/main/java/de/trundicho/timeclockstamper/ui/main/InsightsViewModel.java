@@ -11,17 +11,17 @@ import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDto;
 import de.trundicho.timeclockstamper.core.adapters.api.TimeClockStamperApi;
 import de.trundicho.timeclockstamper.core.adapters.api.TimeClockStamperApiImpl;
 
-public class PastViewModel extends ViewModel {
+public class InsightsViewModel extends ViewModel {
     private final AndroidFilePersistence clockTimePersistencePort;
     private final TimeClockStamperApi timeClockStamperApi;
 
-    public PastViewModel() {
+    public InsightsViewModel() {
         this(new AndroidFilePersistence("",
                         "test-clockTime-list.json",
                         "Europe/Berlin"), "Europe/Berlin");
     }
 
-    public PastViewModel(AndroidFilePersistence clockTimePersistencePort, String timeZone) {
+    public InsightsViewModel(AndroidFilePersistence clockTimePersistencePort, String timeZone) {
         this.clockTimePersistencePort = clockTimePersistencePort;
         timeClockStamperApi = new TimeClockStamperApiImpl(timeZone, clockTimePersistencePort);
     }
