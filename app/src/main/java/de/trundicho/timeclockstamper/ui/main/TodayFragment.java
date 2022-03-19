@@ -145,10 +145,12 @@ public class TodayFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = (View) super.getView(position, convertView, parent);
-            if (position % 2 == 1) {
-                view.setBackgroundColor(Color.parseColor("#f7ffe8"));
-            } else {
-                view.setBackgroundColor(Color.WHITE);
+            if (!NightModeChecker.isDarkMode(view)) {
+                if (position % 2 == 1) {
+                    view.setBackgroundColor(Color.parseColor("#f7ffe8"));
+                } else {
+                    view.setBackgroundColor(Color.WHITE);
+                }
             }
             return view;
         }

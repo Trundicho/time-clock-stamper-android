@@ -198,14 +198,16 @@ public class InsightsFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
-            Map<String, String> map = data.get(position);
-            String value = map.get("Date");
-            if (!value.split("::")[1].contains("-")) {
-                view.setBackgroundColor(Color.parseColor("#fff2da"));
-            } else if(value.contains("Can not compute")){
-                view.setBackgroundColor(Color.parseColor("#ff9999"));
-            } else {
-                view.setBackgroundColor(Color.parseColor("#f7ffe8"));
+            if (!NightModeChecker.isDarkMode(view)) {
+                Map<String, String> map = data.get(position);
+                String value = map.get("Date");
+                if (!value.split("::")[1].contains("-")) {
+                    view.setBackgroundColor(Color.parseColor("#fff2da"));
+                } else if(value.contains("Can not compute")){
+                    view.setBackgroundColor(Color.parseColor("#ff9999"));
+                } else {
+                    view.setBackgroundColor(Color.parseColor("#f7ffe8"));
+                }
             }
             return view;
         }

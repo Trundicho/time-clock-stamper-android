@@ -163,14 +163,16 @@ public class PastFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
-            String color = "#f7ffe8";
-            if (clockTimeTable.getCount() % 2 == 1) {
-                color = "#fff2da";
-            }
-            if (position % 2 == 1) {
-                view.setBackgroundColor(Color.parseColor(color));
-            } else {
-                view.setBackgroundColor(Color.WHITE);
+            if (!NightModeChecker.isDarkMode(view)) {
+                String color = "#f7ffe8";
+                if (clockTimeTable.getCount() % 2 == 1) {
+                    color = "#fff2da";
+                }
+                if (position % 2 == 1) {
+                    view.setBackgroundColor(Color.parseColor(color));
+                } else {
+                    view.setBackgroundColor(Color.WHITE);
+                }
             }
             return view;
         }
@@ -209,4 +211,5 @@ public class PastFragment extends Fragment {
         item.put("Date", name);
         return item;
     }
+
 }
