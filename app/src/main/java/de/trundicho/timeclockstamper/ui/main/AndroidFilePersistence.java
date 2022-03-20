@@ -122,14 +122,17 @@ public class AndroidFilePersistence implements ClockTimePersistencePort {
 
     public String readJson(Integer year, Integer month) {
         List<ClockTime> clockTimes = read(year, month);
-        LocalDateTime localDate = localDate(year, month);
-        List<ClockTime> clockTimesOfCurrentMonth = clockTimes.stream()
-                .filter(c -> localDate.getMonth().equals(c.getDate().getMonth())
-                        && localDate.getYear() == c.getDate().getYear())
-                .sorted()
-                .collect(Collectors.toList());
+        List<ClockTime> currentClockTimesOrAll = clockTimes;
+        if (year != null && month != null) {
+            LocalDateTime localDate = localDate(year, month);
+            currentClockTimesOrAll = clockTimes.stream()
+                    .filter(c -> localDate.getMonth().equals(c.getDate().getMonth())
+                            && localDate.getYear() == c.getDate().getYear())
+                    .sorted()
+                    .collect(Collectors.toList());
+        }
         try {
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(clockTimesOfCurrentMonth);
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(currentClockTimesOrAll);
         } catch (JsonProcessingException e) {
             System.err.println("Can not read from file " + e.getMessage());
             return "Can not read from file " + e.getMessage();
