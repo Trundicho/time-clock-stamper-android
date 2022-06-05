@@ -88,7 +88,7 @@ public class TodayFragment extends Fragment {
 
     @Override
     public void onResume() {
-        int delay = 10000;
+        int delay = 1000;
         updateUiLoop = new Runnable() {
             @Override
             public void run() {
