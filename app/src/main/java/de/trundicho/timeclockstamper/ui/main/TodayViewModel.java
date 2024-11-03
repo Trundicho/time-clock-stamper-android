@@ -1,5 +1,7 @@
 package de.trundicho.timeclockstamper.ui.main;
 
+import static de.trundicho.timeclockstamper.ui.main.AppConfig.MINUTES_TO_WORK_PER_DAY;
+
 import androidx.lifecycle.ViewModel;
 
 import java.time.LocalTime;
@@ -20,7 +22,7 @@ public class TodayViewModel extends ViewModel {
         clockTimePersistencePort = new AndroidFilePersistence("",
                 "test-clockTime-list.json",
                 timeZone);
-        timeClockStamperApi = new TimeClockStamperApiImpl(timeZone, clockTimePersistencePort);
+        timeClockStamperApi = new TimeClockStamperApiImpl(timeZone, clockTimePersistencePort, MINUTES_TO_WORK_PER_DAY);
     }
 
     public String getWorkedToday() {
